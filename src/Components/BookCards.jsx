@@ -23,6 +23,9 @@ function BookCards({book}){
                 <p>{book.author_name?.join(",") || "Unknown author"}</p>
 
                 <p> {book.first_publish_year || "Year unavailable"}</p>
+
+                <a href={`https://openlibrary.org${book.key}`}
+                target="_blank" rel="noreferrer" className="viewbook">View Book </a>
             </div>
         </div>
     );

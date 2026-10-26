@@ -12,6 +12,7 @@ function App() {
     const [loading,setLoading]=useState(true);
     const [error,setError]=useState("");
 
+    const [retryCnt,setRetryCnt]=useState(0);
 
     useEffect(()=>{
       async function fetchBooks() {
@@ -19,9 +20,9 @@ function App() {
           setLoading(true);
           setError("");
 
-          const url =
-  `/openlibrary/search.json?q=${encodeURIComponent(searchName)}` +
-  `&fields=key,title,author_name,first_publish_year,cover_i&limit=10`;
+        const url =
+          `/openlibrary/search.json?q=${encodeURIComponent(searchName)}` +
+          `&fields=key,title,author_name,first_publish_year,cover_i&limit=10`;
 
 
       const response=await fetch(url);
@@ -42,11 +43,16 @@ function App() {
         }
        } 
        fetchBooks();
-    } , [searchName] ); // heer depend--[searchName] so on changing the searchName return the effect 
+    } , [searchName,retryCnt] ); // heer dependency--[searchName] so on changing the searchName return the effect // also for retry add a dependancy retrycnt, so as retrycnt chnages again fetch and all(so like on changing the cnt react return the effect)
 
 
     function handleSearch(){
         setSearchName(name);
+        setName("");
+    }
+
+    function handleRetry(){
+      setRetryCnt((prev)=> prev+1);
     }
 
   return (
@@ -62,7 +68,11 @@ function App() {
         )}
 
         {!loading && error && (
-          <p className="status">Error: {error}</p>
+        
+          <div className='status'>
+             <p >Error: {error}</p>
+           <button className="retry" onClick={handleRetry}>Try Again</button>
+          </div>
         )}
 
         {!loading && !error && booksArray.length === 0 && (
@@ -72,11 +82,21 @@ function App() {
         )}
 
         {!loading && !error && booksArray.length > 0 && (
+          <>
+          {/* show how many books found */}
+
+            <div className="results">
+              <h2>Search Results </h2>
+              <p>Found {booksArray.length} Books.</p>
+            </div>
+
           <div className="book-grid">
             {booksArray.map((book) => (
               <BookCards key={book.key} book={book} />
             ))}
           </div>
+          
+          </>
         )}
       </div>
 
